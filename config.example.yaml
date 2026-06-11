@@ -1,0 +1,41 @@
+# r1rpc 配置示例：复制为 config.yaml 后按需修改。
+# 所有项都能用同名环境变量覆盖（如 JWT_SECRET、MYSQL_HOST），方便容器部署。
+# 未填写的项走内置默认值。
+
+server:
+  app_name: "r1rpc"
+  server_id: "r1rpc-node-1"
+  http_addr: ":8080"
+  jwt_secret: ""            # 必填：换成你自己的随机长串
+  time_zone: "Asia/Shanghai"
+
+admin:                       # 首次启动自动创建的后台管理员账号
+  username: "admin"
+  password: ""              # 必填：换成强密码
+
+# 对外 RPC 调用的鉴权（免鉴权 / apikey）按「分组」单独设置，在后台分组页配置，不在这里。
+
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  user: "root"
+  password: ""
+  db: "r1rpc"
+  # params: "charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai&timeout=5s&readTimeout=30s&writeTimeout=30s"
+  max_open_conns: 32
+  max_idle_conns: 8
+  conn_max_lifetime_minutes: 10
+
+limits:
+  request_timeout_seconds: 25     # 单次调用超时
+  client_max_in_flight: 8         # 单设备同时在途请求数
+  device_offline_seconds: 20      # 多久没心跳判离线
+  heartbeat_interval_seconds: 5
+  # 数据保留
+  raw_retention_days: 3                       # 明细请求保留天数
+  raw_request_keep_latest_per_scope: 100      # 每个 (分组/action/设备) 维度只留最近 N 条明细
+  aggregate_retention_days: 30                # 按天聚合指标保留天数
+  # 持久化队列（一般不用动）
+  persist_queue_size: 4096
+  persist_workers: 2
+  client_queue_size: 256

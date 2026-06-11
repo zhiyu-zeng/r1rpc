@@ -1,0 +1,97 @@
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--gray-2);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ===== 入场动画 ===== */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 路由内容切换时整页淡入上滑（按 key 重挂触发） */
+.page-enter {
+  animation: pageEnter 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* 登录卡片弹入 */
+.pop-in {
+  animation: popIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* 卡片悬停微抬升 */
+.rt-Card {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.rt-Card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-4);
+}
+
+/* ===== 弹窗淡入淡出（覆盖 Radix 默认的 scale-hide / overlay no-op，消除关闭闪烁）===== */
+@keyframes rtDialogFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes rtDialogFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.rt-BaseDialogOverlay[data-state='open'],
+.rt-BaseDialogContent[data-state='open'] {
+  animation: rtDialogFadeIn 0.18s ease both !important;
+}
+.rt-BaseDialogOverlay[data-state='closed'],
+.rt-BaseDialogContent[data-state='closed'] {
+  animation: rtDialogFadeOut 0.16s ease both !important;
+  opacity: 0 !important;
+}
+
+/* 去掉 Recharts 图表点击/聚焦时浏览器默认的蓝色描边
+   recharts v3 给 svg(role=application,tabindex=0) 及内部 g 层都加了可聚焦能力，
+   所以用后代选择器 + !important 覆盖所有可聚焦后代。 */
+.recharts-responsive-container :focus,
+.recharts-responsive-container :focus-visible,
+.recharts-wrapper,
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-wrapper :focus,
+.recharts-wrapper :focus-visible {
+  outline: none !important;
+}

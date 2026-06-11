@@ -1,0 +1,58 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Go
+.gocache/
+*.test
+coverage.out
+
+# Local binaries
+/server.exe
+/server
+
+# Java / Android build output
+**/build/
+**/out/
+**/.gradle/
+clients/xposed-demo/local.properties
+
+# Python cache
+**/__pycache__/
+*.pyc
+
+# Logs / temp
+*.log
+*.tmp
+*.swp
+
+# Local env files
+.env
+.env.*
+
+# Backup files
+*.bak
+*.pre_client_fix.bak
+
+# 本地配置（含密钥，勿提交）
+config.yaml
+r1rpc.yaml
+
+# Node
+node_modules/
+web/dist/
+
+# Claude Code / 本地工具
+.claude/
+.claude*
+
+# IDA Pro 数据库/配置
+*.i64
+*.idb
+*.id0
+*.id1
+*.id2
+*.nam
+*.til

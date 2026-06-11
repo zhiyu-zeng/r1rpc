@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- 底层色块 -->
+  <rect x="20" y="20" width="60" height="60" rx="15" fill="#1a8cff"/>
+  <!-- 负空间切割：斜向的数据通道 -->
+  <path d="M20 55 L80 45" stroke="white" stroke-width="8" stroke-linecap="round"/>
+  <!-- 上下两个极简指示符 -->
+  <circle cx="40" cy="38" r="4" fill="white"/>
+  <circle cx="60" cy="62" r="4" fill="white" fill-opacity="0.6"/>
+</svg>

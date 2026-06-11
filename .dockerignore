@@ -1,0 +1,7 @@
+.git
+web/node_modules
+web/dist
+**/*.log
+config.yaml
+r1rpc.yaml
+.idea

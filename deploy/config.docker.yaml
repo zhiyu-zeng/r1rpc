@@ -1,0 +1,22 @@
+# 本地 docker 部署用配置（被 docker-compose 挂载为 /app/config.yaml）。
+# 仅用于本地，生产请改 jwt_secret / admin.password / mysql.password。
+server:
+  http_addr: ":9876"
+  jwt_secret: "r1rpc-local-docker-secret-change-me"
+  time_zone: "Asia/Shanghai"
+
+admin:
+  username: "admin"
+  password: "123456"
+
+mysql:
+  host: "mysql"        # docker-compose 内的服务名
+  port: 3306
+  user: "root"
+  password: "r1rpc_dev"
+  db: "r1rpc"
+
+limits:
+  client_max_in_flight: 8
+  request_timeout_seconds: 25
+  device_offline_seconds: 20
