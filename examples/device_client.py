@@ -17,10 +17,30 @@ r1rpc 设备端参考客户端（通用示例）。
         --device-key dk_xxxx \
         --group demo \
         --id device-01
+
+生产部署（重要）：
+    设备「在线」= 这个进程活着。进程一旦退出，面板里设备立刻离线。
+    所以正式环境务必用进程管理器常驻 + 崩溃自动拉起，别用裸 `python ... &`：
+
+    Linux (systemd) — /etc/systemd/system/r1rpc-device.service：
+        [Service]
+        Environment=R1RPC_DEVICE_KEY=dk_xxxx
+        ExecStart=/usr/bin/python3 /opt/r1rpc/device_client.py \
+            --server https://your-host --group demo --id device-01
+        Restart=always
+        RestartSec=3
+        [Install]
+        WantedBy=multi-user.target
+        # systemctl enable --now r1rpc-device
+
+    macOS 用 launchd LaunchAgent（KeepAlive=true + RunAtLoad=true）同理。
+
+    本脚本已支持被 SIGTERM/SIGINT 优雅停止（关闭 WS 后退出），配合上述管理器即可。
 """
 import argparse
 import json
 import os
+import signal
 import threading
 import time
 from urllib.parse import quote
@@ -40,6 +60,20 @@ class R1RPCClient:
         self._running = False
         self._sock = None
         self._send_lock = threading.Lock()  # websocket-client.send() 非线程安全，必须串行化
+
+    # 优雅停止：被 systemd/launchd 发 SIGTERM 时调用，唤醒阻塞的 recv() 并关闭 WS
+    def stop(self):
+        self._running = False
+        sock = self._sock
+        if sock:
+            try:
+                sock.abort()  # 强制唤醒正阻塞在 recv() 的接收循环，否则要等 socket 超时
+            except Exception:
+                pass
+            try:
+                sock.close()
+            except Exception:
+                pass
 
     # 注册一个 action 处理函数：handler(payload) -> 任意可 JSON 序列化的结果
     def register(self, action):
@@ -120,6 +154,8 @@ class R1RPCClient:
                         # 每个任务一个线程，不阻塞接收循环（也别忘了发送已加锁）
                         threading.Thread(target=self._handle_job, args=(msg["job"],), daemon=True).start()
             except Exception as e:
+                if not self._running:
+                    break  # 收到停止信号，正常退出，不再重连
                 print(f"[r1rpc] 连接断开: {e}，2s 后重连…")
                 time.sleep(2)
             finally:
@@ -152,6 +188,14 @@ def main():
     def echo(payload):
         # 原样回显调用方传来的 payload
         return {"echo": payload}
+
+    # 被 systemd/launchd（或 Ctrl-C）停止时，优雅关闭 WS 后退出
+    def _shutdown(signum, _frame):
+        print(f"[r1rpc] 收到信号 {signum}，正在退出…")
+        client.stop()
+
+    signal.signal(signal.SIGINT, _shutdown)
+    signal.signal(signal.SIGTERM, _shutdown)
 
     print(f"[r1rpc] 启动：server={args.server} group={args.group} id={args.id} "
           f"actions={list(client.handlers.keys())}")
