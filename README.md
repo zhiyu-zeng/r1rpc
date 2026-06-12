@@ -125,3 +125,7 @@ deploy/         Dockerfile + docker-compose + 配置
 ## 技术栈
 
 Go（标准库 net/http 1.22 路由 + [coder/websocket](https://github.com/coder/websocket)）· MySQL · React 18 + Vite + Radix Themes + Recharts。单节点、无 Redis。
+
+## 友情链接
+
+> [LINUX DO](https://linux.do/) —— 新的理想型社区，技术爱好者的聚集地。
